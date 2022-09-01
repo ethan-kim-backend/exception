@@ -1,0 +1,30 @@
+package hello.exception.resolver;
+
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.ModelAndView;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class MyHandlerExceptionResolver implements HandlerExceptionResolver {
+    @Override
+    public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        log.info("call resolver", ex);
+        try {
+            if (ex instanceof IllegalArgumentException) {
+                log.info("IllegalArgumentException resolver to 400");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
+                return new ModelAndView();//빈값으로 넘기면 에러가 아닌 정상적인 흐름으로 처리된다.
+            }
+        } catch (IOException e) {
+            log.error("resolver ex", e);
+            // throw new RuntimeException(e);
+        }
+        return null;
+    }
+}
